@@ -1,0 +1,27 @@
+{% extends 'auth_base.html' %}
+
+{% block title %}
+    <title>log_in</title>
+{% endblock %}
+
+
+{% block body %}
+<h1>Авторизация</h1>
+<form action="{% url 'auth_sys:sign_in_handler'  %}" method="post" name="form">
+    {% csrf_token %}
+    <div class="username">
+        <label for="username" id="label_username">Username:   </label>
+        <input type="text" name="username" id="username_box" class="boxes">
+    </div>
+    <div class="passsword">
+        <label for="password" id="label_password">Password: </label>
+        <input type="password" name="password" id="password_box" class="boxes">
+    </div>
+
+    <input type="submit" name="submit" id="log_in" value="Log in">
+    {% if login_error %}
+        <br><label class="error">{{ login_error }}</label>
+    {% endif %}
+</form>
+<a href="{% url 'auth_sys:sign_up' %}"><button>Регистрация</button></a>
+{% endblock %}

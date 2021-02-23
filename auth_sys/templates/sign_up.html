@@ -1,0 +1,14 @@
+{% extends 'auth_base.html' %}
+
+{% block title %}
+    <title>Регистрация</title>
+{% endblock %}
+
+{% block body %}
+    <form action="" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Зарегистрироваться</button>
+    </form>
+    <a href="{% url 'auth_sys:sign_in' %}"><button>Авторизация</button></a>
+{% endblock %}

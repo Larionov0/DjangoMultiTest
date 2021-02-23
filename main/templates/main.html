@@ -1,0 +1,81 @@
+{% extends 'main_base.html' %}
+
+{% block title %}
+<title>Main page</title>
+{% endblock %}
+
+
+{% block content %}
+<h1>Hello, {{ userprofile.username }}</h1>
+<div id="desk">
+
+</div>
+<style type="text/css">
+    .point {
+        position: absolute;
+        background-color: blue;
+        border: 1px solid black;
+        width: 15px;
+        height: 15px;
+    }
+
+    #desk {
+    	position: absolute;
+    }
+</style>
+<script>
+	var csrf_token = "{{ csrf_token }}";
+
+    function get_points(){
+    	let points = [
+    		{x: 1, y: 2},
+    		{x: 10, y: 100},
+    		{x: 100, y: 40}
+    	]
+    	return points
+    }
+    async function get_points(){
+    	let points;
+        await fetch("{% url 'api_v1:get_points' %}", {
+          method: 'GET',
+          headers: {
+            'X-CSRF-Token': csrf_token
+          },
+          credentials: 'same-origin',
+        }).then((response)=>response.json()).then((data)=>{points = data.points});
+    	return points
+    }
+
+    function point_to_html(point){
+    	return `<div class='point' style='top: ${point.y}px; left: ${point.x}px'></div>`
+    }
+
+    async function update(){
+    	let points = await get_points()
+    	let desk = document.getElementById('desk');
+    	let text = ''
+    	for (let point of points){
+    		text += point_to_html(point);
+    	}
+    	desk.innerHTML = text;
+    }
+
+    async function new_point(event){
+    	let data = new FormData();
+		data.append('csrfmiddlewaretoken', csrf_token)
+		data.append('point', JSON.stringify({x: event.clientX, y: event.clientY}))
+
+	    await fetch("{% url 'api_v1:new_point' %}", {
+	      method: 'POST',
+	      headers: {
+	        'X-CSRF-Token': csrf_token
+	      },
+	      body: data,
+	      credentials: 'same-origin',
+	    });
+    }
+
+    window.addEventListener('click', new_point)
+    window.setInterval(update, 1000);
+</script>
+{% endblock %}
